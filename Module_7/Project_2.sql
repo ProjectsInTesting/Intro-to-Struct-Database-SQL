@@ -580,3 +580,95 @@ mysql> SELECT RMA.Reason AS RETURN_REASON, COUNT(*) AS NUMBER_OF_RETURNS,
 | Other         |              7928 |    23.5581 |
 +---------------+-------------------+------------+
 3 rows in set (0.10 sec)
+*******************************************************
+mysql> SELECT Collaborators.City AS City, COUNT(*) AS Returns
+    -> FROM RMA
+    -> INNER JOIN Orders ON Orders.OrderID = RMA.OrderID
+    -> INNER JOIN Collaborators ON Orders.CollaboratorID = Collaborators.CollaboratorID
+    -> GROUP BY City
+    -> ORDER BY Returns DESC
+    -> LIMIT 10;
++-------------+---------+
+| City        | Returns |
++-------------+---------+
+| Columbus    |     771 |
+| Arlington   |     753 |
+| Framingham  |     499 |
+| New Orleans |     423 |
+| Anaheim     |     413 |
+| Baton Rouge |     412 |
+| Lubbock     |     407 |
+| Louisville  |     407 |
+| Riverside   |     404 |
+| Milwaukee   |     402 |
++-------------+---------+
+10 rows in set (0.17 sec)
+
+*************************************************************
+
+mysql> SELECT Collaborators.City AS City, COUNT(*) AS Returns
+    -> FROM RMA
+    -> INNER JOIN Orders ON Orders.OrderID = RMA.OrderID
+    -> INNER JOIN Collaborators ON Orders.CollaboratorID = Collaborators.CollaboratorID
+    -> GROUP BY City
+    -> ORDER BY Returns ASC
+    -> LIMIT 10;
++----------------+---------+
+| City           | Returns |
++----------------+---------+
+| Providence     |       5 |
+| Woonsocket     |       7 |
+| Warwick        |      10 |
+| San Diego      |     340 |
+| St. Louis      |     340 |
+| Pittsburgh     |     343 |
+| Albuquerque    |     346 |
+| St. Petersburg |     347 |
+| Colorado       |     348 |
+| Boston         |     354 |
++----------------+---------+
+10 rows in set (0.16 sec)
+
+*************************************************************
+mysql> SELECT Collaborators.State,
+    -> COUNT(DISTINCT RMA.OrderID) / COUNT(DISTINCT Orders.OrderID) * 100 AS Return_Rate
+    -> FROM Collaborators
+    -> JOIN Orders ON Collaborators.CollaboratorID = Orders.CollaboratorID
+    -> LEFT JOIN RMA ON Orders.OrderID = RMA.OrderID
+    -> GROUP BY Collaborators.State
+    -> ORDER BY Return_Rate DESC
+    -> LIMIT 10;
++--------------+-------------+
+| State        | Return_Rate |
++--------------+-------------+
+| North Dakota |     99.3557 |
+| Texas        |     99.0753 |
+| Oklahoma     |     99.0741 |
+| Alabama      |     98.9260 |
+| Georgia      |     98.8950 |
+| Indiana      |     98.8903 |
+| Minnesota    |     98.8764 |
+| Louisiana    |     98.8750 |
+| Missouri     |     98.8491 |
+| California   |     98.8327 |
++--------------+-------------+
+
+*************************************************************
+
+mysql> SELECT RMA.Step, COUNT(*) AS Other_Count
+    -> FROM RMA
+    -> WHERE Reason = 'Other'
+    -> GROUP BY Step
+    -> ORDER BY Other_Count DESC;
++-------------------------------------------------+-------------+
+| Step                                            | Other_Count |
++-------------------------------------------------+-------------+
+| Product replacement or account refund processed |        7928 |
+| Awaiting customer Documentation                 |        2418 |
+| Received returned equipment                     |        1495 |
++-------------------------------------------------+-------------+
+3 rows in set (0.06 sec)
+
+**************************************************************
+
+
